@@ -1,0 +1,62 @@
+[
+  {
+    "id": "photo-1779445078317-719424546",
+    "filename": "1779445078317-719424546_download.jpeg",
+    "description": "Hijab Segi Empat Premium Motif Floral Charcoal Elegance",
+    "category": "jilbab",
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-05-22T10:17:58.320Z",
+    "url": "/uploads/1779445078317-719424546_download.jpeg"
+  },
+  {
+    "id": "photo-1779445868120-50084225",
+    "filename": "1779445868120-50084225_peralatanjhait.jpeg",
+    "description": "Set Alat Jahit Dasar Lengkap",
+    "category": "peralatan",
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-05-22T10:31:08.122Z",
+    "url": "/uploads/1779445868120-50084225_peralatanjhait.jpeg"
+  },
+  {
+    "id": "photo-1779446172248-206708528",
+    "filename": "1779446172248-206708528_bajupria.jpg",
+    "description": "Kemeja Koko Modern Denim Series – Slim Fit Mandarin Collar",
+    "category": "pria",
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-05-22T10:36:12.257Z",
+    "url": "/uploads/1779446172248-206708528_bajupria.jpg"
+  },
+  {
+    "id": "photo-1779446346191-702945894",
+    "filename": "1779446346191-702945894_bajuwanita.jpg",
+    "description": "Konstruksi Tailor-Made dengan Detail Asimetris",
+    "category": "wanita",
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-05-22T10:39:06.193Z",
+    "url": "/uploads/1779446346191-702945894_bajuwanita.jpg"
+  },
+  {
+    "id": "photo-1779446468027-853847190",
+    "filename": "1779446468027-853847190_pasmina.jpg",
+    "description": "Pashmina Kaos Rayon Premium",
+    "category": "jilbab",
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-05-22T10:41:08.030Z",
+    "url": "/uploads/1779446468027-853847190_pasmina.jpg"
+  },
+  {
+    "id": "photo-1779446493040-402977235",
+    "filename": "1779446493040-402977235_segiempat.jpg",
+    "description": "Basic Square Voal – Koleksi Earthy & Pastel Series",
+    "category": "jilbab",
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-05-22T10:41:33.042Z",
+    "url": "/uploads/1779446493040-402977235_segiempat.jpg"
+  }
+]
