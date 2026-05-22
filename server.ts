@@ -424,5 +424,3 @@ async function startServer() {
   });
 }
 
-// Kick off server startup
-startServer();
