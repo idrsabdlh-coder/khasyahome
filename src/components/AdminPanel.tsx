@@ -41,7 +41,7 @@ export default function AdminPanel() {
   const [submitting, setSubmitting] = useState(false);
 
   // Default admin secret password conforming to folder /admin-khasya-2026/
-  const ADMIN_SECRET = "admin2026";
+  const ADMIN_SECRET = import.meta.env.VITE_ADMIN_PASSWORD || "gantidengansandirahasia";
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -293,7 +293,6 @@ export default function AdminPanel() {
                 placeholder="••••••••"
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-brand-black text-sm focus:bg-white focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
               />
-              <p className="text-[10px] text-gray-400 mt-1">Petunjuk: Sandi default adalah <code className="font-mono bg-gray-100 px-1 py-0.5 rounded text-gray-600">{ADMIN_SECRET}</code></p>
             </div>
 
             {passwordError && (
