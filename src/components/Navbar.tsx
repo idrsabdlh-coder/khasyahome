@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, X, MessageCircle, Lock } from "lucide-react";
+import { Menu, X, MessageCircle } from "lucide-react";
 
 interface NavbarProps {
   isAdminView: boolean;
@@ -23,10 +23,9 @@ export default function Navbar({ isAdminView, setIsAdminView }: NavbarProps) {
     setIsAdminView(false);
     setIsOpen(false);
     
-    // Smooth scroll to element
     const element = document.getElementById(id);
     if (element) {
-      const offset = 80; // height of navbar
+      const offset = 80;
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = element.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
@@ -90,20 +89,6 @@ export default function Navbar({ isAdminView, setIsAdminView }: NavbarProps) {
             >
               Kontak
             </a>
-            <button
-              onClick={() => {
-                setIsAdminView(!isAdminView);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className={`flex items-center space-x-1.5 text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider transition-all border ${
-                isAdminView
-                  ? "bg-brand-black text-white border-brand-black"
-                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
-              }`}
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span>{isAdminView ? "Situs Publik" : "Admin Dashboard"}</span>
-            </button>
           </nav>
 
           {/* CTA Button */}
@@ -121,21 +106,6 @@ export default function Navbar({ isAdminView, setIsAdminView }: NavbarProps) {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-3">
-            <button
-              onClick={() => {
-                setIsAdminView(!isAdminView);
-                setIsOpen(false);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className={`p-1.5 rounded-lg border text-xs ${
-                isAdminView
-                  ? "bg-brand-black text-white border-brand-black"
-                  : "bg-gray-50 text-gray-500 border-gray-200"
-              }`}
-              title="Toggle Admin View"
-            >
-              <Lock className="w-4 h-4" />
-            </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-lg text-brand-black hover:bg-gray-100 transition-colors"
@@ -171,25 +141,6 @@ export default function Navbar({ isAdminView, setIsAdminView }: NavbarProps) {
           >
             Kontak & Lokasi
           </a>
-          <hr className="border-gray-100 my-2" />
-          <div className="px-3 py-1 flex justify-between items-center">
-            <span className="text-sm text-gray-500">Mode Panel</span>
-            <button
-              onClick={() => {
-                setIsAdminView(!isAdminView);
-                setIsOpen(false);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className={`flex items-center space-x-1.5 text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider transition-all border ${
-                isAdminView
-                  ? "bg-brand-black text-white border-brand-black"
-                  : "bg-gray-50 text-gray-600 border-gray-200"
-              }`}
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span>{isAdminView ? "Situs Publik" : "Admin Dashboard"}</span>
-            </button>
-          </div>
           <div className="pt-2">
             <a
               href="https://wa.me/6282184163987?text=Halo%20Khasya_Home%2C%20saya%20ingin%20bertanya%20tentang%20layanan%20jahit"
