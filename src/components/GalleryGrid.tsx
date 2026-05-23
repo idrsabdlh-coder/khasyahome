@@ -24,16 +24,30 @@ export default function GalleryGrid() {
     { id: "tab-peralatan", label: "Peralatan Jahit", value: "peralatan" }
   ];
 
+  const seedPhotos: GalleryPhoto[] = [
+    { id: "seed-1", filename: "kemeja-batik-premium.jpg", description: "Kemeja Batik Premium - Jahitan halus furing katun hero dengan pola simetris rapi.", category: "pria", is_featured: true, is_active: true, created_at: "", url: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=1000&auto=format&fit=crop&q=80" },
+    { id: "seed-2", filename: "jas-pengantin-custom.jpg", description: "Jas Pengantin Custom - Set berkelas lengkap dengan vest, tailoring presisi pas badan.", category: "pria", is_featured: false, is_active: true, created_at: "", url: "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=1000&auto=format&fit=crop&q=80" },
+    { id: "seed-3", filename: "gaun-kebaya-modern.jpg", description: "Gaun Kebaya Modern - Perpaduan brokat prada premium dengan payet berkilau mewah.", category: "wanita", is_featured: true, is_active: true, created_at: "", url: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=1000&auto=format&fit=crop&q=80" },
+    { id: "seed-4", filename: "gamis-syari-anggun.jpg", description: "Gamis Syari Anggun - Desain anggun bahan ceruty armany premium dua layer.", category: "wanita", is_featured: false, is_active: true, created_at: "", url: "https://images.unsplash.com/photo-1549064492-661ffb578a4d?w=1000&auto=format&fit=crop&q=80" },
+    { id: "seed-5", filename: "pashmina-silk-luxury.jpg", description: "Pashmina Silk Luxury - Koleksi hijab premium mulus berkilau, adem dan sangat mudah dibentuk.", category: "jilbab", is_featured: true, is_active: true, created_at: "", url: "https://images.unsplash.com/photo-1609172765481-30926e2a5b4a?w=1000&auto=format&fit=crop&q=80" },
+    { id: "seed-6", filename: "hijab-segiempat-voal.jpg", description: "Hijab Segiempat Voal - Motif cetak eksklusif, tegak di dahi dan nyaman untuk harian.", category: "jilbab", is_featured: false, is_active: true, created_at: "", url: "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=1000&auto=format&fit=crop&q=80" },
+    { id: "seed-7", filename: "mesin-jahit-singer.jpg", description: "Mesin Jahit Singer - Layanan jahit didukung peralatan digital presisi super rapi.", category: "peralatan", is_featured: false, is_active: true, created_at: "", url: "https://images.unsplash.com/photo-1528570188406-29a679346f36?w=1000&auto=format&fit=crop&q=80" },
+    { id: "seed-8", filename: "benang-jahit-premium.jpg", description: "Benang Jahit Premium - Bahan baku benang berkualitas tinggi yang kuat dan tidak mudah luntur.", category: "peralatan", is_featured: false, is_active: true, created_at: "", url: "https://images.unsplash.com/photo-1506806732259-39c2d0268443?w=1000&auto=format&fit=crop&q=80" },
+  ];
+
   const fetchPhotos = async () => {
     try {
       setLoading(true);
       const res = await fetch("/api/gallery");
       const json = await res.json();
-      if (json.status === "success") {
+      if (json.status === "success" && json.data.length > 0) {
         setPhotos(json.data);
+      } else {
+        setPhotos(seedPhotos);
       }
     } catch (e) {
       console.error("Failed to load catalog photo grid:", e);
+      setPhotos(seedPhotos);
     } finally {
       setLoading(false);
     }
