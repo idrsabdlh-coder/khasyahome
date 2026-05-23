@@ -17,38 +17,38 @@ export default function GalleryCarousel() {
         setFeaturedPhotos(json.data);
       } else {
         // Fallback to active featured items from seed if empty
-        const defaultFeatured: GalleryPhoto[] = [
-          {
-            id: "seed-1",
-            filename: "kemeja-batik-premium.jpg",
-            description: "Kemeja Batik Premium - Jahitan halus furing katun hero dengan pola simetris rapi.",
-            category: "pria",
-            is_featured: true,
-            is_active: true,
-            created_at: "",
-            url: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=1000&auto=format&fit=crop&q=80"
-          },
-          {
-            id: "seed-3",
-            filename: "gaun-kebaya-modern.jpg",
-            description: "Gaun Kebaya Modern - Perpaduan brokat prada premium dengan payet berkilau mewah.",
-            category: "wanita",
-            is_featured: true,
-            is_active: true,
-            created_at: "",
-            url: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=1000&auto=format&fit=crop&q=80"
-          },
-          {
-            id: "seed-5",
-            filename: "pashmina-silk-luxury.jpg",
-            description: "Pashmina Silk Luxury - Koleksi hijab premium mulus berkilau, adem dan sangat mudah dibentuk.",
-            category: "jilbab",
-            is_featured: true,
-            is_active: true,
-            created_at: "",
-            url: "https://images.unsplash.com/photo-1609172765481-30926e2a5b4a?w=1000&auto=format&fit=crop&q=80"
-          }
-        ];
+       const defaultFeatured: GalleryPhoto[] = [
+  {
+    id: "seed-1",
+    filename: "bajupria.jpg",
+    description: "Kemeja Batik Premium - Jahitan halus furing katun hero dengan pola simetris rapi.",
+    category: "pria",
+    is_featured: true,
+    is_active: true,
+    created_at: "",
+    url: "/uploads/bajupria.jpg"
+  },
+  {
+    id: "seed-3",
+    filename: "bajuwanita.jpg",
+    description: "Gaun Kebaya Modern - Perpaduan brokat prada premium dengan payet berkilau mewah.",
+    category: "wanita",
+    is_featured: true,
+    is_active: true,
+    created_at: "",
+    url: "/uploads/bajuwanita.jpg"
+  },
+  {
+    id: "seed-5",
+    filename: "pasmina.jpg",
+    description: "Pashmina Silk Luxury - Koleksi hijab premium mulus berkilau, adem dan sangat mudah dibentuk.",
+    category: "jilbab",
+    is_featured: true,
+    is_active: true,
+    created_at: "",
+    url: "/uploads/pasmina.jpg"
+  }
+];
         setFeaturedPhotos(defaultFeatured);
       }
     } catch (e) {
