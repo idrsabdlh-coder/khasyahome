@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
-import { MessageCircle, Maximize2, X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import { GalleryPhoto, PhotoCategory } from "../types.ts";
 import imgBajuPria from '../assets/bajupria.jpg'
 import imgBajuWanita from '../assets/bajuwanita.jpg'
 import imgDownload from '../assets/download.jpeg'
 import imgPasmina from '../assets/pasmina.jpg'
 import imgSegiempat from '../assets/segiempat.jpg'
-import imgPeralatan from '../assets/peralatanjahait.jpeg'
+import imgPeralatan from '../assets/peralatanjhait.jpeg'
+import { useState, useEffect } from "react";
+import { MessageCircle, Maximize2, X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { GalleryPhoto, PhotoCategory } from "../types.ts";
+
 
 interface FilterTab {
   id: string;
@@ -30,18 +31,18 @@ export default function GalleryGrid() {
     { id: "tab-peralatan", label: "Peralatan Jahit", value: "peralatan" }
   ];
 
-  const seedPhotos: GalleryPhoto[] = [
-  { id: "seed-1", filename: "bajupria.jpg", description: "Kemeja Batik Premium - Jahitan halus furing katun hero dengan pola simetris rapi.", category: "pria", is_featured: true, is_active: true, created_at: "", url: "/uploads/bajupria.jpg" },
-  { id: "seed-2", filename: "bajuwanita.jpg", description: "Gaun Kebaya Modern - Perpaduan brokat prada premium dengan payet berkilau mewah.", category: "wanita", is_featured: true, is_active: true, created_at: "", url: "/uploads/bajuwanita.jpg" },
-  { id: "seed-3", filename: "download.jpeg", description: "Koleksi Busana Muslim Modern - Desain anggun dan elegan.", category: "wanita", is_featured: false, is_active: true, created_at: "", url: "/uploads/download.jpeg" },
-  { id: "seed-4", filename: "pasmina.jpg", description: "Pashmina Silk Luxury - Koleksi hijab premium mulus berkilau.", category: "jilbab", is_featured: true, is_active: true, created_at: "", url: "/uploads/pasmina.jpg" },
-  { id: "seed-5", filename: "segiempat.jpg", description: "Hijab Segiempat Voal - Motif cetak eksklusif, nyaman untuk harian.", category: "jilbab", is_featured: false, is_active: true, created_at: "", url: "/uploads/segiempat.jpg" },
-  { id: "seed-6", filename: "peralatanjahit.jpeg", description: "Peralatan Jahit Premium - Didukung peralatan digital presisi super rapi.", category: "peralatan", is_featured: false, is_active: true, created_at: "", url: "/uploads/peralatanjahit.jpeg" },
+const seedPhotos: GalleryPhoto[] = [
+  { id: "seed-1", filename: "bajupria.jpg", description: "Kemeja Batik Premium - Jahitan halus furing katun hero dengan pola simetris rapi.", category: "pria", is_featured: true, is_active: true, created_at: "", url: imgBajuPria },
+  { id: "seed-2", filename: "bajuwanita.jpg", description: "Gaun Kebaya Modern - Perpaduan brokat prada premium dengan payet berkilau mewah.", category: "wanita", is_featured: true, is_active: true, created_at: "", url: imgBajuWanita },
+  { id: "seed-3", filename: "download.jpeg", description: "Koleksi Busana Muslim Modern - Desain anggun dan elegan.", category: "wanita", is_featured: false, is_active: true, created_at: "", url: imgDownload },
+  { id: "seed-4", filename: "pasmina.jpg", description: "Pashmina Silk Luxury - Koleksi hijab premium mulus berkilau.", category: "jilbab", is_featured: true, is_active: true, created_at: "", url: imgPasmina },
+  { id: "seed-5", filename: "segiempat.jpg", description: "Hijab Segiempat Voal - Motif cetak eksklusif, nyaman untuk harian.", category: "jilbab", is_featured: false, is_active: true, created_at: "", url: imgSegiempat },
+  { id: "seed-6", filename: "peralatanjahit.jpeg", description: "Peralatan Jahit Premium - Didukung peralatan digital presisi super rapi.", category: "peralatan", is_featured: false, is_active: true, created_at: "", url: imgPeralatan },
 ];
-
-  useEffect(() => {
-    fetchPhotos();
-  }, []);
+useEffect(() => {
+  setPhotos(seedPhotos);
+  setLoading(false);
+}, []);
 
   const getFilteredPhotos = () => {
     if (selectedFilter === "all") {
