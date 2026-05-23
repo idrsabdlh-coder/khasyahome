@@ -2,11 +2,9 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { createServer as createViteServer } from "vite";
-import { GalleryPhoto } from "./src/types.ts"; // or use custom local types in server context
+import { GalleryPhoto } from "./src/types.ts";
 
 const app = express();
-const PORT = 3000;
 
 // Resolve paths for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -142,12 +140,14 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 // Static serving for local uploads
 app.use("/uploads", express.static(uploadsDir));
 
-// --- API ROUTES FIRST ---
+// Serve static dist in production (untuk Vercel)
+const distPath = path.join(process.cwd(), "dist");
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
 
-/**
- * GET /api/gallery
- * Returns list of photos based on filters: category, featured
- */
+// --- API ROUTES ---
+
 app.get("/api/gallery", (req, res) => {
   try {
     const photos = readDatabase();
@@ -155,8 +155,6 @@ app.get("/api/gallery", (req, res) => {
 
     let filtered = photos;
 
-    // Admin endpoint accesses ALL photos (both active and inactive)
-    // Public endpoint only accesses ACTIVE photos
     if (admin !== "1") {
       filtered = filtered.filter(p => p.is_active);
     }
@@ -169,37 +167,24 @@ app.get("/api/gallery", (req, res) => {
       filtered = filtered.filter(p => p.is_featured);
     }
 
-    // Sort by created_at descending
     filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-    res.json({
-      status: "success",
-      data: filtered
-    });
+    res.json({ status: "success", data: filtered });
   } catch (err: any) {
     res.status(500).json({ status: "error", message: err.message });
   }
 });
 
-/**
- * GET /api/stats
- * Statistics summary for Admin Dashboard
- */
 app.get("/api/stats", (req, res) => {
   try {
     const photos = readDatabase();
-    
-    const byCategory = {
-      pria: 0,
-      wanita: 0,
-      jilbab: 0,
-      peralatan: 0
+
+    const byCategory: Record<string, number> = {
+      pria: 0, wanita: 0, jilbab: 0, peralatan: 0
     };
 
     photos.forEach(p => {
-      if (p.category in byCategory) {
-        byCategory[p.category]++;
-      }
+      if (p.category in byCategory) byCategory[p.category]++;
     });
 
     res.json({
@@ -216,10 +201,6 @@ app.get("/api/stats", (req, res) => {
   }
 });
 
-/**
- * POST /api/gallery/upload
- * Handles base64 photo uploads securely
- */
 app.post("/api/gallery/upload", (req, res) => {
   try {
     const { filename, description, category, is_featured, is_active, base64Data } = req.body;
@@ -228,38 +209,31 @@ app.post("/api/gallery/upload", (req, res) => {
       return res.status(400).json({ status: "error", message: "Missing required parameters: filename, category, or base64Data" });
     }
 
-    // Validate category
     const validCategories = ["pria", "wanita", "jilbab", "peralatan"];
     if (!validCategories.includes(category)) {
-      return res.status(400).json({ status: "error", message: "Invalid category. Must be one of pria, wanita, jilbab, atau peralatan" });
+      return res.status(400).json({ status: "error", message: "Invalid category." });
     }
 
-    // Create unique filename to prevent duplicates
     const uniqueId = Date.now().toString() + "-" + Math.round(Math.random() * 1E9);
     const sanitizedFilename = uniqueId + "_" + filename.replace(/[^a-zA-Z0-9.\-_]/g, "");
     const fileExtension = path.extname(sanitizedFilename).toLowerCase();
 
-    // Validate extension
     const allowedExtensions = [".jpg", ".jpeg", ".png"];
     if (!allowedExtensions.includes(fileExtension)) {
       return res.status(400).json({ status: "error", message: "Only .jpg, .jpeg, and .png are allowed" });
     }
 
-    // Strip header if base64 contains typing prefix (e.g., data:image/png;base64,)
     const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(cleanBase64, "base64");
 
-    // Validate size (max 2MB)
-    const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+    const MAX_SIZE = 2 * 1024 * 1024;
     if (buffer.length > MAX_SIZE) {
       return res.status(400).json({ status: "error", message: "Image files must be under 2MB." });
     }
 
-    // Write file to filesystem
     const targetPath = path.join(uploadsDir, sanitizedFilename);
     fs.writeFileSync(targetPath, buffer);
 
-    // Save record in database
     const photos = readDatabase();
     const newPhoto: GalleryPhoto = {
       id: "photo-" + uniqueId,
@@ -275,165 +249,114 @@ app.post("/api/gallery/upload", (req, res) => {
     photos.push(newPhoto);
     writeDatabase(photos);
 
-    res.json({
-      status: "success",
-      message: "Photo uploaded successfully",
-      data: newPhoto
-    });
+    res.json({ status: "success", message: "Photo uploaded successfully", data: newPhoto });
   } catch (err: any) {
     console.error("Upload handler error:", err);
     res.status(500).json({ status: "error", message: err.message });
   }
 });
 
-/**
- * POST /api/gallery/delete
- * Deletes photos from the database and deletes local files if present
- */
 app.post("/api/gallery/delete", (req, res) => {
   try {
     const { id } = req.body;
-    if (!id) {
-      return res.status(400).json({ status: "error", message: "Missing required photo ID to delete" });
-    }
+    if (!id) return res.status(400).json({ status: "error", message: "Missing required photo ID" });
 
     let photos = readDatabase();
     const targetIdx = photos.findIndex(p => p.id === id);
 
-    if (targetIdx === -1) {
-      return res.status(404).json({ status: "error", message: "Photo not found" });
-    }
+    if (targetIdx === -1) return res.status(404).json({ status: "error", message: "Photo not found" });
 
     const photoToDelete = photos[targetIdx];
 
-    // Delete local photo file if it exists (skip seed images with external web URLs)
     if (photoToDelete.url.startsWith("/uploads/")) {
       const filePath = path.join(uploadsDir, photoToDelete.filename);
       if (fs.existsSync(filePath)) {
-        try {
-          fs.unlinkSync(filePath);
-        } catch (err) {
-          console.error("Error unlinking file:", filePath, err);
-        }
+        try { fs.unlinkSync(filePath); } catch (err) { console.error("Error unlinking file:", err); }
       }
     }
 
-    // Remove from array and save database
     photos.splice(targetIdx, 1);
     writeDatabase(photos);
 
-    res.json({
-      status: "success",
-      message: "Photo deleted and removed successfully"
-    });
+    res.json({ status: "success", message: "Photo deleted successfully" });
   } catch (err: any) {
     res.status(500).json({ status: "error", message: err.message });
   }
 });
 
-/**
- * POST /api/gallery/toggle
- * Toggles is_active status of a photo
- */
 app.post("/api/gallery/toggle", (req, res) => {
   try {
     const { id } = req.body;
-    if (!id) {
-      return res.status(400).json({ status: "error", message: "Missing ID parameter" });
-    }
+    if (!id) return res.status(400).json({ status: "error", message: "Missing ID parameter" });
 
     const photos = readDatabase();
     const photo = photos.find(p => p.id === id);
-
-    if (!photo) {
-      return res.status(404).json({ status: "error", message: "Photo not found" });
-    }
+    if (!photo) return res.status(404).json({ status: "error", message: "Photo not found" });
 
     photo.is_active = !photo.is_active;
     writeDatabase(photos);
 
-    res.json({
-      status: "success",
-      message: `Photo visibility toggled to ${photo.is_active ? "Active" : "Inactive"}`,
-      data: photo
-    });
+    res.json({ status: "success", message: `Toggled to ${photo.is_active ? "Active" : "Inactive"}`, data: photo });
   } catch (err: any) {
     res.status(500).json({ status: "error", message: err.message });
   }
 });
 
-/**
- * POST /api/gallery/toggle-featured
- * Toggles is_featured status of a photo
- */
 app.post("/api/gallery/toggle-featured", (req, res) => {
   try {
     const { id } = req.body;
-    if (!id) {
-      return res.status(400).json({ status: "error", message: "Missing ID parameter" });
-    }
+    if (!id) return res.status(400).json({ status: "error", message: "Missing ID parameter" });
 
     const photos = readDatabase();
     const photo = photos.find(p => p.id === id);
-
-    if (!photo) {
-      return res.status(404).json({ status: "error", message: "Photo not found" });
-    }
+    if (!photo) return res.status(404).json({ status: "error", message: "Photo not found" });
 
     photo.is_featured = !photo.is_featured;
     writeDatabase(photos);
 
-    res.json({
-      status: "success",
-      message: `Photo featured toggled to ${photo.is_featured ? "Featured" : "Regular"}`,
-      data: photo
-    });
+    res.json({ status: "success", message: `Toggled to ${photo.is_featured ? "Featured" : "Regular"}`, data: photo });
   } catch (err: any) {
     res.status(500).json({ status: "error", message: err.message });
   }
 });
 
-
-// Serve robots.txt blocking search engine indexing of admin path
 app.get("/robots.txt", (req, res) => {
   res.type("text/plain");
   res.send("User-agent: *\nDisallow: /admin-khasya-2026/");
 });
 
-
-// Configure Vite for development mode, or static serving for production mode
-async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
-    console.log("Starting server in DEVELOPMENT MODE with Vite Middleware");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
+// SPA fallback — harus paling bawah
+app.get("*", (req, res) => {
+  const indexPath = path.join(process.cwd(), "dist", "index.html");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
   } else {
-    console.log("Starting server in PRODUCTION MODE serving static dist built assets");
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+    res.status(404).send("Not found");
+  }
+});
+
+// Jalankan server lokal hanya kalau bukan di Vercel
+if (process.env.VERCEL !== "1") {
+  const PORT = process.env.PORT || 3000;
+
+  // Development mode dengan Vite middleware
+  if (process.env.NODE_ENV !== "production") {
+    (async () => {
+      const { createServer: createViteServer } = await import("vite");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+      app.listen(PORT, () => {
+        console.log(`Dev server running on http://localhost:${PORT}`);
+      });
+    })();
+  } else {
+    app.listen(PORT, () => {
+      console.log(`Production server running on http://localhost:${PORT}`);
     });
   }
-
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}
-
-if (process.env.VERCEL !== '1') {
-  startServer();
 }
 
 export default app;
-
-// Jalankan server lokal hanya kalau bukan di Vercel
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}
