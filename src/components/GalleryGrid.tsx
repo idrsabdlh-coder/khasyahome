@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { MessageCircle, Maximize2, X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { GalleryPhoto, PhotoCategory } from "../types.ts";
+import imgBajuPria from '../assets/bajupria.jpg'
+import imgBajuWanita from '../assets/bajuwanita.jpg'
+import imgDownload from '../assets/download.jpeg'
+import imgPasmina from '../assets/pasmina.jpg'
+import imgSegiempat from '../assets/segiempat.jpg'
+import imgPeralatan from '../assets/peralatanjahait.jpeg'
 
 interface FilterTab {
   id: string;
