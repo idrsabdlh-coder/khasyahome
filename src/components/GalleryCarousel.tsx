@@ -1,23 +1,11 @@
+import imgBajuPria from '../assets/bajupria.jpg'
+import imgBajuWanita from '../assets/bajuwanita.jpg'
+import imgPasmina from '../assets/pasmina.jpg'
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Sparkles, MessageCircle } from "lucide-react";
 import { GalleryPhoto } from "../types.ts";
 
-export default function GalleryCarousel() {
-  const [featuredPhotos, setFeaturedPhotos] = useState<GalleryPhoto[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const autoplayRef = useRef<NodeJS.Timeout | null>(null);
-
-  const fetchFeatured = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/gallery?featured=1");
-      const json = await res.json();
-      if (json.status === "success" && json.data.length > 0) {
-        setFeaturedPhotos(json.data);
-      } else {
-        // Fallback to active featured items from seed if empty
-       const defaultFeatured: GalleryPhoto[] = [
+const defaultFeatured: GalleryPhoto[] = [
   {
     id: "seed-1",
     filename: "bajupria.jpg",
@@ -26,52 +14,39 @@ export default function GalleryCarousel() {
     is_featured: true,
     is_active: true,
     created_at: "",
-    url: "/uploads/bajupria.jpg"
+    url: imgBajuPria
   },
   {
-    id: "seed-3",
+    id: "seed-2",
     filename: "bajuwanita.jpg",
     description: "Gaun Kebaya Modern - Perpaduan brokat prada premium dengan payet berkilau mewah.",
     category: "wanita",
     is_featured: true,
     is_active: true,
     created_at: "",
-    url: "/uploads/bajuwanita.jpg"
+    url: imgBajuWanita
   },
   {
-    id: "seed-5",
+    id: "seed-4",
     filename: "pasmina.jpg",
     description: "Pashmina Silk Luxury - Koleksi hijab premium mulus berkilau, adem dan sangat mudah dibentuk.",
     category: "jilbab",
     is_featured: true,
     is_active: true,
     created_at: "",
-    url: "/uploads/pasmina.jpg"
+    url: imgPasmina
   }
 ];
-        setFeaturedPhotos(defaultFeatured);
-      }
-    } catch (e) {
-      console.error("Failed to load featured catalog:", e);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+export default function GalleryCarousel() {
+  const [featuredPhotos] = useState<GalleryPhoto[]>(defaultFeatured);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const autoplayRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    fetchFeatured();
-  }, []);
-
-  // Set up autoplay
-  useEffect(() => {
-    if (featuredPhotos.length === 0) return;
-
     resetAutoplay();
-
-    return () => {
-      stopAutoplay();
-    };
-  }, [featuredPhotos, currentIndex]);
+    return () => stopAutoplay();
+  }, [currentIndex]);
 
   const startAutoplay = () => {
     autoplayRef.current = setInterval(() => {
@@ -106,31 +81,11 @@ export default function GalleryCarousel() {
     else if (category === "wanita") baseText = `Halo Khasya_Home, saya tertarik dengan jasa jahit baju wanita: ${name}`;
     else if (category === "jilbab") baseText = `Halo Khasya_Home, saya tertarik dengan koleksi jilbab: ${name}`;
     else if (category === "peralatan") baseText = `Halo Khasya_Home, saya ingin menanyakan ketersediaan peralatan jahit: ${name}`;
-    
     return `https://wa.me/${phone}?text=${encodeURIComponent(baseText)}`;
   };
 
-  if (loading) {
-    return (
-      <div className="bg-white/50 animate-pulse rounded-2xl h-[450px] flex items-center justify-center">
-        <div className="text-gray-400">Loading Featured Carousel...</div>
-      </div>
-    );
-  }
-
-  if (featuredPhotos.length === 0) {
-    return (
-      <div className="bg-gray-100 border border-gray-200 rounded-2xl h-[300px] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 font-serif text-lg">Foto Segera Hadir</p>
-          <p className="text-gray-400 text-xs mt-1">Belum ada foto utama yang diunggulkan oleh admin.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div 
+    <div
       className="relative w-full overflow-hidden rounded-2xl shadow-xl h-[360px] sm:h-[480px] bg-brand-black group"
       onMouseEnter={stopAutoplay}
       onMouseLeave={resetAutoplay}
@@ -144,7 +99,6 @@ export default function GalleryCarousel() {
               index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
             }`}
           >
-            {/* Image background with gradient overlay */}
             <img
               src={photo.url}
               alt={photo.description}
@@ -153,7 +107,6 @@ export default function GalleryCarousel() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
 
-            {/* Slider Content */}
             <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 z-20 text-white max-w-4xl">
               <span className="inline-flex items-center space-x-1 bg-brand-gold/95 text-neutral-950 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider mb-3">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -164,7 +117,9 @@ export default function GalleryCarousel() {
               </p>
               <div className="flex flex-wrap items-center gap-4 mt-4">
                 <span className="text-xs text-gray-300 font-sans tracking-wide uppercase">
-                  Kategori: <strong className="text-brand-gold font-semibold">{photo.category === "pria" ? "Baju Pria" : photo.category === "wanita" ? "Baju Wanita" : photo.category === "jilbab" ? "Jilbab" : "Peralatan Jahit"}</strong>
+                  Kategori: <strong className="text-brand-gold font-semibold">
+                    {photo.category === "pria" ? "Baju Pria" : photo.category === "wanita" ? "Baju Wanita" : photo.category === "jilbab" ? "Jilbab" : "Peralatan Jahit"}
+                  </strong>
                 </span>
                 <span className="hidden sm:inline text-gray-600">|</span>
                 <a
@@ -182,7 +137,7 @@ export default function GalleryCarousel() {
         ))}
       </div>
 
-      {/* Pre/Next Navigation Controls */}
+      {/* Prev/Next Navigation */}
       <button
         onClick={handlePrev}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-sm transition-all opacity-80 hover:opacity-100 group-hover:scale-105"
@@ -199,7 +154,7 @@ export default function GalleryCarousel() {
         <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
-      {/* Dot Indicators Pagination */}
+      {/* Dot Indicators */}
       <div className="absolute bottom-4 right-6 z-30 flex items-center space-x-2">
         {featuredPhotos.map((_, idx) => (
           <button
