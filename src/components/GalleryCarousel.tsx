@@ -1,6 +1,7 @@
 import imgBajuPria from '../assets/bajupria.jpg'
 import imgBajuWanita from '../assets/bajuwanita.jpg'
 import imgPasmina from '../assets/pasmina.jpg'
+import imgPeralatan from '../assets/peralatanjhait.jpeg'
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Sparkles, MessageCircle } from "lucide-react";
 import { GalleryPhoto } from "../types.ts";
