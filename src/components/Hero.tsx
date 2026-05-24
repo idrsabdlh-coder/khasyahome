@@ -37,7 +37,7 @@ export default function Hero({ onExploreGallery }: HeroProps) {
         >
           <Scissors className="w-4 h-4 text-brand-gold animate-pulse" />
           <span className="text-xs font-semibold tracking-widest text-[#E0E0E0] uppercase">
-            Jasa Jahit & Koleksi Jilbab Jambi
+            Jasa Jahit & Koleksi Jilbab
           </span>
         </motion.div>
 
